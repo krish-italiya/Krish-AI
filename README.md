@@ -1,6 +1,6 @@
 # Krish Italiya — Personal AI Assistant & Interactive Portfolio
 
-An interactive, real-time AI assistant representing **Krish Italiya** (Software Engineer at State Street Corporation). Built with **FastAPI**, **Groq (`llama-3.3-70b-versatile`)**, and **React 19 + TypeScript + Tailwind CSS v4**, this application streams conversational responses grounded in verified career history, technical projects, and engineering experience.
+An interactive, real-time AI assistant representing **Krish Italiya** (Software Engineer at State Street Corporation). Built with **FastAPI**, **Groq**, and **React 19 + TypeScript + Tailwind CSS v4**, this application streams conversational responses grounded in verified career history, technical projects, and engineering experience.
 
 ## Key Features
 
