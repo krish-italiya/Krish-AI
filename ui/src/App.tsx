@@ -115,7 +115,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-3 sm:p-6">
       <div className="w-full max-w-4xl h-[92vh] bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-md">
-        
+
         {/* Header with New Chat & Resume Tooltips */}
         <header className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/70 z-10">
           <div className="flex items-center gap-3.5">
@@ -183,16 +183,29 @@ export default function App() {
                 />
               )}
               <div
-                className={`max-w-[85%] sm:max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
-                  msg.role === "user"
+                className={`max-w-[85%] sm:max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === "user"
                     ? "bg-indigo-600 text-white rounded-tr-none whitespace-pre-wrap"
                     : "bg-zinc-800/90 text-zinc-100 border border-zinc-700/60 rounded-tl-none overflow-x-auto"
-                }`}
+                  }`}
               >
                 {msg.role === "assistant" ? (
                   msg.content ? (
                     <div className="prose prose-invert prose-sm max-w-none space-y-2 [&>p]:leading-relaxed [&>ul]:list-disc [&>ul]:pl-4">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          a: ({ node, ...props }) => (
+                            <a
+                              {...props}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 font-medium transition cursor-pointer"
+                            />
+                          ),
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
                     </div>
                   ) : (
                     <div className="flex items-center gap-1.5 text-zinc-400 text-xs py-0.5">
