@@ -36,11 +36,10 @@ export default function App() {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 140)}px`;
     }
   }, [input]);
 
-  // Reset conversation back to initial state
   const handleNewChat = () => {
     if (isStreaming) return;
     setMessages([INITIAL_MESSAGE]);
@@ -48,7 +47,6 @@ export default function App() {
     setInput("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.focus();
     }
   };
 
@@ -106,62 +104,63 @@ export default function App() {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // On mobile touch devices, let the Return key insert a newline naturally
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    if (e.key === "Enter" && !e.shiftKey && !isTouchDevice) {
       e.preventDefault();
       sendMessage(input);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-3 sm:p-6">
-      <div className="w-full max-w-4xl h-[92vh] bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-md">
-
-        {/* Header with New Chat & Resume Tooltips */}
-        <header className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/70 z-10">
-          <div className="flex items-center gap-3.5">
-            <div className="relative">
+    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 flex items-center justify-center sm:p-6">
+      <div className="w-full max-w-4xl h-[100dvh] sm:h-[92vh] bg-zinc-900/90 sm:border border-zinc-800 sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-md">
+        
+        {/* Responsive Header */}
+        <header className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/80 z-10 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="relative shrink-0">
               <img
                 src="/assets/my_image.png"
                 alt="Krish Italiya"
-                className="w-11 h-11 rounded-full object-cover ring-2 ring-indigo-500/80"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-indigo-500/80"
               />
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-900 rounded-full" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 border-2 border-zinc-900 rounded-full" />
             </div>
-            <div>
-              <h1 className="font-semibold text-sm sm:text-base text-white tracking-tight">Krish Italiya</h1>
-              <p className="text-xs text-zinc-400">Software Engineer • Personal Assistant</p>
+            <div className="truncate">
+              <h1 className="font-semibold text-sm sm:text-base text-white tracking-tight truncate">Krish Italiya</h1>
+              <p className="text-[11px] sm:text-xs text-zinc-400 truncate">Software Engineer • Personal Assistant</p>
             </div>
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2.5">
-            {/* Start New Chat Button + Tooltip */}
+          <div className="flex items-center gap-2 shrink-0">
             <div className="relative group">
               <button
                 onClick={handleNewChat}
                 disabled={isStreaming || messages.length <= 1}
-                className="flex items-center gap-1.5 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 disabled:hover:bg-zinc-800 text-zinc-200 px-3 py-2 rounded-xl border border-zinc-700 transition cursor-pointer disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-200 px-2.5 sm:px-3 py-2 rounded-xl border border-zinc-700 transition cursor-pointer disabled:cursor-not-allowed"
+                aria-label="New Chat"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-zinc-300" />
                 <span className="hidden sm:inline">New Chat</span>
               </button>
-              <div className="pointer-events-none absolute right-0 top-full mt-2 w-max opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-zinc-950 text-zinc-200 text-[11px] px-2.5 py-1.5 rounded-lg border border-zinc-800 shadow-lg">
+              <div className="hidden sm:block pointer-events-none absolute right-0 top-full mt-2 w-max opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-zinc-950 text-zinc-200 text-[11px] px-2.5 py-1.5 rounded-lg border border-zinc-800 shadow-lg">
                 Clear history & start a new chat
               </div>
             </div>
 
-            {/* Resume Button + Tooltip */}
             <div className="relative group">
               <a
                 href="/assets/my_resume.pdf"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3.5 py-2 rounded-xl border border-zinc-700 transition"
+                className="flex items-center gap-1.5 sm:gap-2 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 sm:px-3.5 py-2 rounded-xl border border-zinc-700 transition"
               >
-                <FileText className="w-4 h-4 text-indigo-400" />
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
                 <span>Resume</span>
               </a>
-              <div className="pointer-events-none absolute right-0 top-full mt-2 w-max opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-zinc-950 text-zinc-200 text-[11px] px-2.5 py-1.5 rounded-lg border border-zinc-800 shadow-lg">
+              <div className="hidden sm:block pointer-events-none absolute right-0 top-full mt-2 w-max opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-zinc-950 text-zinc-200 text-[11px] px-2.5 py-1.5 rounded-lg border border-zinc-800 shadow-lg">
                 View / Download Krish's Resume (PDF)
               </div>
             </div>
@@ -169,24 +168,25 @@ export default function App() {
         </header>
 
         {/* Message Feed */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+        <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-4 sm:space-y-5">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`flex items-start gap-3.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex items-start gap-2.5 sm:gap-3.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.role === "assistant" && (
                 <img
                   src="/assets/my_image.png"
                   alt="Krish"
-                  className="w-8 h-8 rounded-full object-cover border border-zinc-700 mt-1 shrink-0"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-zinc-700 mt-1 shrink-0"
                 />
               )}
               <div
-                className={`max-w-[85%] sm:max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === "user"
+                className={`max-w-[86%] sm:max-w-[78%] rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm leading-relaxed shadow-sm break-words ${
+                  msg.role === "user"
                     ? "bg-indigo-600 text-white rounded-tr-none whitespace-pre-wrap"
                     : "bg-zinc-800/90 text-zinc-100 border border-zinc-700/60 rounded-tl-none overflow-x-auto"
-                  }`}
+                }`}
               >
                 {msg.role === "assistant" ? (
                   msg.content ? (
@@ -199,7 +199,7 @@ export default function App() {
                               {...props}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 font-medium transition cursor-pointer"
+                              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 font-medium transition break-all"
                             />
                           ),
                         }}
@@ -226,19 +226,19 @@ export default function App() {
 
           {/* Quick Onboarding Chips */}
           {showStarters && (
-            <div className="pl-11 pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-2xl">
+            <div className="pl-9 sm:pl-11 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 max-w-2xl">
               {STARTER_PROMPTS.map(({ icon: Icon, label, prompt }) => (
                 <button
                   key={label}
                   onClick={() => sendMessage(prompt)}
-                  className="flex items-center gap-3 text-left p-3 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/60 hover:border-indigo-500/50 transition group"
+                  className="flex items-center gap-3 text-left p-2.5 sm:p-3 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 active:bg-zinc-800 border border-zinc-700/60 hover:border-indigo-500/50 transition group"
                 >
-                  <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20">
+                  <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-xs font-semibold text-zinc-200">{label}</div>
-                    <div className="text-[11px] text-zinc-400 line-clamp-1">{prompt}</div>
+                    <div className="text-[11px] text-zinc-400 truncate">{prompt}</div>
                   </div>
                 </button>
               ))}
@@ -248,24 +248,25 @@ export default function App() {
           <div ref={bottomRef} />
         </main>
 
-        {/* Input Bar */}
-        <div className="p-3 sm:p-4 border-t border-zinc-800 bg-zinc-900/70">
-          <div className="flex items-end gap-2 bg-zinc-800/90 border border-zinc-700 rounded-2xl p-2 focus-within:border-indigo-500 transition">
+        {/* Clean, Device-Agnostic Input Bar */}
+        <div className="p-2.5 sm:p-4 border-t border-zinc-800 bg-zinc-900/80 shrink-0">
+          <div className="flex items-end gap-2 bg-zinc-800/90 border border-zinc-700 rounded-2xl p-1.5 sm:p-2 focus-within:border-indigo-500 transition">
             <textarea
               ref={textareaRef}
               rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message Krish... (Enter to send, Shift+Enter for new line)"
+              placeholder="Message Krish..."
               disabled={isStreaming}
-              className="flex-1 max-h-40 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 px-2 py-1.5 focus:outline-none resize-none leading-relaxed"
+              className="flex-1 max-h-36 bg-transparent text-base sm:text-sm text-zinc-100 placeholder-zinc-400 px-2.5 py-1.5 focus:outline-none resize-none leading-relaxed"
             />
             <button
               onClick={() => sendMessage(input)}
               disabled={isStreaming || !input.trim()}
-              className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition flex items-center justify-center shrink-0 mb-0.5"
+              className="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-40 text-white p-2.5 rounded-xl transition flex items-center justify-center shrink-0"
               title="Send message"
+              aria-label="Send message"
             >
               <Send className="w-4 h-4" />
             </button>
