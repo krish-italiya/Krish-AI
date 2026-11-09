@@ -67,8 +67,8 @@ app.add_middleware(
 )
 
 class ChatRequest(BaseModel):
-    message: str = Field(..., min_length=1, max_length=4000)
-    history: List[Message] = Field(default_factory=list, max_length=16)
+    message: str
+    history: List[Message] = []
 
 @app.get("/api/health")
 async def health_check():

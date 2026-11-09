@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from groq import AsyncGroq
 from pydantic import BaseModel
 from pypdf import PdfReader
+import re
 
 load_dotenv()
 
@@ -114,9 +115,17 @@ FALLBACK_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
 async def stream_my_reply(user_message: str, history: List[Message]) -> AsyncGenerator[str, None]:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    for msg in history:
-        messages.append({"role": msg.role, "content": msg.content[:2000]})
-    messages.append({"role": "user", "content": user_message})
+    
+    # Keep the last 10 messages of history, condensing any huge past pastes to 1,500 chars
+    for msg in history[-10:]:
+        messages.append({
+            "role": msg.role,
+            "content": prepare_user_input(msg.content, max_chars=1500),
+        })
+
+    # Prepare the current message (supports full JDs up to 12,000+ chars seamlessly)
+    processed_message = prepare_user_input(user_message, max_chars=12000)
+    messages.append({"role": "user", "content": processed_message})
 
     for model_name in FALLBACK_MODELS:
         try:
@@ -132,13 +141,26 @@ async def stream_my_reply(user_message: str, history: List[Message]) -> AsyncGen
                 delta = chunk.choices[0].delta.content
                 if delta:
                     yield delta
-            return  # Succeeded, exit loop
+            return
         except Exception:
-            continue  # Try the next fallback model
+            continue
 
-    # Ultimate fallback if Groq's entire API is unreachable
     yield (
         "Looks like my AI backend is getting a lot of traffic right now! "
-        "In the meantime, feel free to check out my resume in the top right or reach out directly at "
-        "**krishitaliya11@gmail.com** or [LinkedIn](https://linkedin.com/in/krishitaliya)."
+        "Feel free to check out my resume in the top right or reach out directly at "
+        "[krishitaliya11@gmail.com](mailto:krishitaliya11@gmail.com) or [LinkedIn](https://linkedin.com/in/krishitaliya)."
     )
+    
+def prepare_user_input(text: str, max_chars: int = 12000) -> str:
+    # Collapse excessive newlines and spaces from copy-pasted webpages
+    cleaned = re.sub(r"\n{3,}", "\n\n", text.strip())
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+
+    if len(cleaned) <= max_chars:
+        return cleaned
+
+    # Keep the first 7,000 chars (prompt + role overview/responsibilities)
+    # and the last 4,500 chars (qualifications + tech stack)
+    head = cleaned[:7000]
+    tail = cleaned[-4500:]
+    return f"{head}\n\n...[middle section condensed for length]...\n\n{tail}"

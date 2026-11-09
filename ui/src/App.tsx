@@ -73,7 +73,9 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: trimmed, history: historyPayload }),
       });
-
+      if (!response.ok || !response.body) {
+        throw new Error(`Server returned ${response.status}`);
+      }
       if (!response.body) throw new Error("No response stream");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
